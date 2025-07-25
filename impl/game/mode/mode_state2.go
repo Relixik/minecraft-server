@@ -27,6 +27,14 @@ func HandleState2(watcher util.Watcher, join chan base.PlayerAndConnection) {
 
 		_, public := auth.NewCrypt()
 
+		// Check if encryption keys were generated successfully
+		if public == nil {
+			conn.SendPacket(&client.PacketODisconnect{
+				Reason: *msgs.New("Server encryption error - please try again").SetColor(chat.Red),
+			})
+			return
+		}
+
 		response := client.PacketOEncryptionRequest{
 			Server: "",
 			Public: public,
@@ -47,16 +55,25 @@ func HandleState2(watcher util.Watcher, join chan base.PlayerAndConnection) {
 
 		ver, err := auth.Decrypt(packet.Verify)
 		if err != nil {
-			panic(fmt.Errorf("failed to decrypt token: %s\n%v\n", conn.CertifyName(), err))
+			conn.SendPacket(&client.PacketODisconnect{
+				Reason: *msgs.New(fmt.Sprintf("Failed to decrypt token: %v", err)).SetColor(chat.Red),
+			})
+			return
 		}
 
 		if !bytes.Equal(ver, conn.CertifyData()) {
-			panic(fmt.Errorf("encryption failed, tokens are different: %s\n%v | %v", conn.CertifyName(), ver, conn.CertifyData()))
+			conn.SendPacket(&client.PacketODisconnect{
+				Reason: *msgs.New("Encryption verification failed").SetColor(chat.Red),
+			})
+			return
 		}
 
 		sec, err := auth.Decrypt(packet.Secret)
 		if err != nil {
-			panic(fmt.Errorf("failed to decrypt secret: %s\n%v\n", conn.CertifyName(), err))
+			conn.SendPacket(&client.PacketODisconnect{
+				Reason: *msgs.New(fmt.Sprintf("Failed to decrypt secret: %v", err)).SetColor(chat.Red),
+			})
+			return
 		}
 
 		conn.CertifyUpdate(sec) // enable encryption on the connection
@@ -71,12 +88,18 @@ func HandleState2(watcher util.Watcher, join chan base.PlayerAndConnection) {
 			}()
 
 			if err != nil {
-				panic(fmt.Errorf("failed to authenticate: %s\n%v\n", conn.CertifyName(), err))
+				conn.SendPacket(&client.PacketODisconnect{
+					Reason: *msgs.New(fmt.Sprintf("Authentication failed: %v", err)).SetColor(chat.Red),
+				})
+				return
 			}
 
 			uuid, err := uuid.TextToUUID(auth.UUID)
 			if err != nil {
-				panic(fmt.Errorf("failed to decode uuid for %s: %s\n%v\n", conn.CertifyName(), auth.UUID, err))
+				conn.SendPacket(&client.PacketODisconnect{
+					Reason: *msgs.New(fmt.Sprintf("Invalid UUID format: %s", auth.UUID)).SetColor(chat.Red),
+				})
+				return
 			}
 
 			prof := game.Profile{

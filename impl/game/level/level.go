@@ -1,13 +1,16 @@
 package level
 
 import (
+	"sync"
+
 	apis_level "github.com/Relixik/minecraft-server/apis/game/level"
 	"github.com/Relixik/minecraft-server/apis/uuid"
 )
 
 type level struct {
-	name string
-	uuid uuid.UUID
+	mu     sync.RWMutex
+	name   string
+	uuid   uuid.UUID
 
 	chunks map[int64]*chunk
 }
@@ -32,7 +35,10 @@ func (l *level) UUID() uuid.UUID {
 }
 
 func (l *level) Chunks() []apis_level.Chunk {
-	chunks := make([]apis_level.Chunk, len(l.chunks), len(l.chunks))
+	l.mu.RLock()
+	defer l.mu.RUnlock()
+	
+	chunks := make([]apis_level.Chunk, len(l.chunks))
 
 	index := 0
 	for _, chunk := range l.chunks {
@@ -64,12 +70,26 @@ func (l *level) GetBlock(x, y, z int) apis_level.Block {
 func (l *level) getChunk(x, z int, generate bool) apis_level.Chunk {
 	idx := chunkIndex(x, z)
 
+	// First try to read with RLock
+	l.mu.RLock()
 	cnk, con := l.chunks[idx]
+	l.mu.RUnlock()
+	
 	if con {
 		return cnk
 	}
 
 	if generate {
+		// Need to write, so acquire write lock
+		l.mu.Lock()
+		defer l.mu.Unlock()
+		
+		// Double-check after acquiring write lock
+		cnk, con := l.chunks[idx]
+		if con {
+			return cnk
+		}
+		
 		gen := newChunk(l, x, z)
 		l.chunks[idx] = gen
 

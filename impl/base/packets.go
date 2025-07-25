@@ -1,7 +1,7 @@
 package base
 
 import (
-	"fmt"
+	"log"
 
 	"github.com/Relixik/minecraft-server/apis/buff"
 	"github.com/Relixik/minecraft-server/apis/util"
@@ -31,7 +31,8 @@ func PacketStateValueOf(s int) PacketState {
 	case 3:
 		return PLAY
 	default:
-		panic(fmt.Errorf("no state for value: %d", s))
+		log.Printf("WARNING: Unknown packet state value %d in PacketStateValueOf, defaulting to SHAKE", s)
+		return SHAKE
 	}
 }
 
@@ -46,7 +47,8 @@ func (state PacketState) String() string {
 	case PLAY:
 		return "Play"
 	default:
-		panic(fmt.Errorf("no state for value: %d", state))
+		log.Printf("WARNING: Unknown packet state %d in String(), defaulting to 'Unknown'", state)
+		return "Unknown"
 	}
 }
 
@@ -61,7 +63,8 @@ func (state PacketState) Next() PacketState {
 	case PLAY:
 		return SHAKE
 	default:
-		panic(fmt.Errorf("no state for value: %d", state))
+		log.Printf("WARNING: Unknown packet state %d in Next(), defaulting to SHAKE", state)
+		return SHAKE
 	}
 }
 
