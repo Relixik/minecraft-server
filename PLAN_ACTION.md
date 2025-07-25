@@ -30,35 +30,40 @@
 ### 🔴 **CRITIQUE** - Stabilité de base
 
 #### T001 - Migration Go et dépendances
-- [ ] **T001.1** - Migrer vers Go 1.21+ pour les génériques
+- [x] **T001.1** - Migrer vers Go 1.21+ pour les génériques
   - Estimation : 2 jours
   - Responsable : Lead Dev
   - Prérequis : Aucun
   - Tests : Compilation et tests existants
+  - ✅ **TERMINÉ** - Migration Go 1.13 → 1.21 réussie
 
-- [ ] **T001.2** - Mise à jour des dépendances
+- [x] **T001.2** - Mise à jour des dépendances
   - `github.com/satori/go.uuid` → `github.com/google/uuid`
   - `github.com/fatih/color` → dernière version
   - `github.com/hako/durafmt` → dernière version
   - Estimation : 1 jour
   - Tests : Compatibilité et fonctionnement
+  - ✅ **TERMINÉ** - Toutes les dépendances mises à jour
 
-- [ ] **T001.3** - Audit de sécurité des dépendances
+- [x] **T001.3** - Audit de sécurité des dépendances
   - Scanner avec `go list -m -u all`
   - Vérifier les CVE avec `govulncheck`
   - Estimation : 0.5 jour
+  - ✅ **TERMINÉ** - Audit de sécurité complet réalisé
 
 #### T002 - Correction des bugs critiques
-- [ ] **T002.1** - Fix des race conditions détectées
+- [x] **T002.1** - Fix des race conditions détectées
   - Analyser avec `go run -race`
   - Corriger les accès concurrents non protégés
   - Estimation : 3 jours
   - Priorité : CRITIQUE
+  - ✅ **TERMINÉ** - Race conditions critiques corrigées
 
-- [ ] **T002.2** - Gestion d'erreurs robuste
+- [x] **T002.2** - Gestion d'erreurs robuste
   - Remplacer les `panic()` par des retours d'erreur
   - Implémenter des fallbacks gracieux
   - Estimation : 2 jours
+  - ✅ **TERMINÉ** - Tous les panic() critiques éliminés, server stable
 
 - [ ] **T002.3** - Memory leaks dans les connexions
   - Profiler avec `go tool pprof`
