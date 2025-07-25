@@ -3,13 +3,13 @@ package uuid
 import (
 	"encoding/binary"
 
-	"github.com/satori/go.uuid"
+	"github.com/google/uuid"
 )
 
 type UUID = uuid.UUID
 
 func NewUUID() UUID {
-	gen := uuid.NewV4()
+	gen := uuid.New()
 	/*if err != nil {
 		panic(err)
 	}*/
@@ -18,7 +18,7 @@ func NewUUID() UUID {
 }
 
 func TextToUUID(text string) (data UUID, err error) {
-	return uuid.FromString(text)
+	return uuid.Parse(text)
 }
 
 func BitsToUUID(msb, lsb int64) (data UUID, err error) {
@@ -42,7 +42,7 @@ func UUIDToText(uuid UUID) (text string, err error) {
 }
 
 func SigBits(uuid UUID) (msb, lsb int64) {
-	bytes := uuid.Bytes()
+	bytes := uuid[:]
 
 	msb = 0
 	lsb = 0
