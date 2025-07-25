@@ -190,11 +190,13 @@ func (s *server) stopServerCommand(sender ents.Sender, params []string) {
 		param, err := strconv.Atoi(params[0])
 
 		if err != nil {
-			panic(err)
+			s.logging.FailF("invalid delay parameter '%s': %v", params[0], err)
+			return
 		}
 
 		if param <= 0 {
-			panic(fmt.Errorf("value must be a positive whole number. [1..]"))
+			s.logging.FailF("delay must be a positive whole number [1..], got: %d", param)
+			return
 		}
 
 		after = int64(param)
@@ -333,7 +335,7 @@ type playerAssociation struct {
 func (p *playerAssociation) addData(data impl_base.PlayerAndConnection) {
 	p.mu.Lock()
 	defer p.mu.Unlock()
-	
+
 	p.uuidToData[data.Player.UUID()] = data.Player
 
 	p.connToUUID[data.Connection] = data.Player.UUID()
@@ -343,7 +345,7 @@ func (p *playerAssociation) addData(data impl_base.PlayerAndConnection) {
 func (p *playerAssociation) delData(data impl_base.PlayerAndConnection) {
 	p.mu.Lock()
 	defer p.mu.Unlock()
-	
+
 	uuid, exists := p.connToUUID[data.Connection]
 	if !exists {
 		return
@@ -360,14 +362,14 @@ func (p *playerAssociation) delData(data impl_base.PlayerAndConnection) {
 func (p *playerAssociation) playerByUUID(uuid uuid.UUID) ents.Player {
 	p.mu.RLock()
 	defer p.mu.RUnlock()
-	
+
 	return p.uuidToData[uuid]
 }
 
 func (p *playerAssociation) playerByConn(conn impl_base.Connection) ents.Player {
 	p.mu.RLock()
 	defer p.mu.RUnlock()
-	
+
 	uuid, con := p.connToUUID[conn]
 
 	if !con {

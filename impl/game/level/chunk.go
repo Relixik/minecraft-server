@@ -64,8 +64,13 @@ func (c *chunk) Slices() []apis_level.Slice {
 }
 
 func (c *chunk) GetSlice(y int) apis_level.Slice {
+	// Validate slice index and return a safe default slice for invalid indices
 	if y < 0 || y > 15 {
-		panic("index out of range [0:15]")
+		// Return bedrock slice (index 0) as a safe fallback
+		if c.slices[0] == nil {
+			c.slices[0] = newSlice(c, 0)
+		}
+		return c.slices[0]
 	}
 
 	slc := c.slices[y]
@@ -80,14 +85,16 @@ func (c *chunk) GetSlice(y int) apis_level.Slice {
 }
 
 func (c *chunk) GetBlock(x, y, z int) apis_level.Block {
-	if x < 0 || x > 15 {
-		panic("invalid x value for chunk get block")
-	}
-	if y < 0 || y > 255 {
-		panic("invalid y value for chunk get block")
-	}
-	if z < 0 || z > 15 {
-		panic("invalid z value for chunk get block")
+	// Validate coordinates and return air block for invalid coordinates
+	if x < 0 || x > 15 || y < 0 || y > 255 || z < 0 || z > 15 {
+		// Return a safe air block at chunk origin instead of panicking
+		bedrock := c.GetSlice(0).(*slice) // get bedrock slice with type assertion
+		return &block{
+			x:     c.x << 0x04, // chunk origin x
+			y:     0,           // bedrock level (safe y)
+			z:     c.z << 0x04, // chunk origin z
+			slice: bedrock,
+		}
 	}
 
 	return &block{

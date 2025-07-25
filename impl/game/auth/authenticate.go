@@ -55,6 +55,11 @@ func generateAuthSHA(secret []byte) string {
 	// update with encoded secret, and encoded public
 	_, public := NewCrypt()
 
+	// If public key generation failed, use empty array (will still create a hash)
+	if public == nil {
+		public = []byte{}
+	}
+
 	sha.Write(secret)
 	sha.Write(public)
 

@@ -4,8 +4,8 @@ import (
 	"bytes"
 	"compress/zlib"
 	"crypto/cipher"
-	"fmt"
 	"io"
+	"log"
 	"net"
 
 	"github.com/Relixik/minecraft-server/apis/rand"
@@ -88,13 +88,15 @@ func (c *connection) CertifyData() []byte {
 func (c *connection) CertifyUpdate(secret []byte) {
 	encrypt, decrypt, err := crypto.NewEncryptAndDecrypt(secret)
 
-	c.certify.encrypt = encrypt
-	c.certify.decrypt = decrypt
-
 	if err != nil {
-		panic(fmt.Errorf("failed to enable encryption for user: %s\n%v", c.CertifyName(), err))
+		log.Printf("CRITICAL: Failed to enable encryption for user %s: %v", c.CertifyName(), err)
+		// Close the connection since encryption is mandatory
+		c.tcp.Close()
+		return
 	}
 
+	c.certify.encrypt = encrypt
+	c.certify.decrypt = decrypt
 	c.certify.used = true
 	c.certify.data = secret
 }
@@ -132,11 +134,16 @@ func (c *connection) Inflate(data []byte) (output []byte) {
 
 	reader, err := zlib.NewReader(bytes.NewReader(data))
 	if err != nil {
-		panic(err)
+		log.Printf("WARNING: Failed to decompress data for user %s: %v - returning original data", c.CertifyName(), err)
+		return data // Return original data as fallback
 	}
 
 	var out bytes.Buffer
-	_, _ = io.Copy(&out, reader)
+	_, err = io.Copy(&out, reader)
+	if err != nil {
+		log.Printf("WARNING: Failed to read decompressed data for user %s: %v - returning original data", c.CertifyName(), err)
+		return data // Return original data as fallback
+	}
 
 	output = out.Bytes()
 

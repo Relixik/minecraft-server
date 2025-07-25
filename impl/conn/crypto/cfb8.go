@@ -3,6 +3,7 @@ package crypto
 import (
 	"crypto/aes"
 	"crypto/cipher"
+	"fmt"
 )
 
 type cfb8 struct {
@@ -13,20 +14,20 @@ type cfb8 struct {
 	decrypt bool
 }
 
-func newEncrypt(block cipher.Block, iv []byte) cipher.Stream {
+func newEncrypt(block cipher.Block, iv []byte) (cipher.Stream, error) {
 	if len(iv) != block.BlockSize() {
-		panic("cfb8.newEncrypt: IV length must equal block size")
+		return nil, fmt.Errorf("cfb8.newEncrypt: IV length (%d) must equal block size (%d)", len(iv), block.BlockSize())
 	}
 
-	return newCFB8(block, iv, false)
+	return newCFB8(block, iv, false), nil
 }
 
-func newDecrypt(block cipher.Block, iv []byte) cipher.Stream {
+func newDecrypt(block cipher.Block, iv []byte) (cipher.Stream, error) {
 	if len(iv) != block.BlockSize() {
-		panic("cfb8.newDecrypt: IV length must equal block size")
+		return nil, fmt.Errorf("cfb8.newDecrypt: IV length (%d) must equal block size (%d)", len(iv), block.BlockSize())
 	}
 
-	return newCFB8(block, iv, true)
+	return newCFB8(block, iv, true), nil
 }
 
 func newCFB8(block cipher.Block, iv []byte, decrypt bool) cipher.Stream {
@@ -80,8 +81,15 @@ func NewEncryptAndDecrypt(secret []byte) (encrypt cipher.Stream, decrypt cipher.
 		return nil, nil, err
 	}
 
-	encrypt = newEncrypt(block, secret)
-	decrypt = newDecrypt(block, secret)
+	encrypt, err = newEncrypt(block, secret)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	decrypt, err = newDecrypt(block, secret)
+	if err != nil {
+		return nil, nil, err
+	}
 
 	return
 }

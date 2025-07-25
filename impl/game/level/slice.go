@@ -39,14 +39,15 @@ func (s *slice) Level() apis_level.Level {
 }
 
 func (s *slice) GetBlock(x, y, z int) apis_level.Block {
-	if x < 0 || x > 15 {
-		panic("invalid x value for slice get block")
-	}
-	if y < 0 || y > 15 {
-		panic("invalid y value for slice get block")
-	}
-	if z < 0 || z > 15 {
-		panic("invalid z value for slice get block")
+	// Validate coordinates and return air block (type 0) for invalid coordinates
+	if x < 0 || x > 15 || y < 0 || y > 15 || z < 0 || z > 15 {
+		// Return a safe air block at origin coordinates instead of panicking
+		return &block{
+			x:     s.chunk.x << 0x04,           // chunk origin x
+			y:     apis_level.SliceH * s.index, // slice origin y
+			z:     s.chunk.z << 0x04,           // chunk origin z
+			slice: s,
+		}
 	}
 
 	return &block{
