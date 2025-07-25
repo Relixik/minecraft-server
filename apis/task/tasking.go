@@ -2,6 +2,7 @@ package task
 
 import (
 	"fmt"
+	"sync"
 	"sync/atomic"
 	"time"
 
@@ -19,6 +20,7 @@ type Task struct {
 }
 
 type Tasking struct {
+	mu  sync.RWMutex
 	// milliseconds per tick
 	mpt int64
 
@@ -94,6 +96,9 @@ func (t *Tasking) tick() {
 func (t *Tasking) tickTasks(curr time.Time) {
 	unix := curr.UnixNano() / 1e6
 
+	t.mu.Lock()
+	defer t.mu.Unlock()
+
 	for task, last := range t.ticks {
 		if unix-last < task.period {
 			continue // not ready to be executed
@@ -118,6 +123,9 @@ func (t *Tasking) tickQueue(curr time.Time) {
 
 	unix := curr.UnixNano() / 1e6
 
+	t.mu.Lock()
+	defer t.mu.Unlock()
+
 	for when, tasks := range t.queue {
 		if unix < when {
 			continue // not ready to be executed
@@ -138,6 +146,9 @@ func (t *Tasking) nextTaskU() int64 {
 func (t *Tasking) repeats(period int64, function func(task *Task)) {
 	task := t.newTask(period, 0, &function)
 
+	t.mu.Lock()
+	defer t.mu.Unlock()
+	
 	t.ticks[task] = 0
 	t.tasks[task.uuid] = task
 }
@@ -148,6 +159,9 @@ func (t *Tasking) delayed(paused int64, function func(task *Task)) {
 	unix := time.Now().UnixNano() / 1e6
 	when := unix + paused
 
+	t.mu.Lock()
+	defer t.mu.Unlock()
+	
 	queue, exists := t.queue[when]
 
 	if !exists {
