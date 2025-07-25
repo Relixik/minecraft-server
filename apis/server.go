@@ -3,15 +3,15 @@ package apis
 import (
 	"sync"
 
-	"github.com/golangmc/minecraft-server/apis/cmds"
-	"github.com/golangmc/minecraft-server/apis/ents"
-	"github.com/golangmc/minecraft-server/apis/logs"
-	"github.com/golangmc/minecraft-server/apis/task"
-	"github.com/golangmc/minecraft-server/apis/util"
-	"github.com/golangmc/minecraft-server/apis/uuid"
+	"github.com/Relixik/minecraft-server/apis/cmds"
+	"github.com/Relixik/minecraft-server/apis/ents"
+	"github.com/Relixik/minecraft-server/apis/logs"
+	"github.com/Relixik/minecraft-server/apis/task"
+	"github.com/Relixik/minecraft-server/apis/util"
+	"github.com/Relixik/minecraft-server/apis/uuid"
 
-	apis_base "github.com/golangmc/minecraft-server/apis/base"
-	impl_base "github.com/golangmc/minecraft-server/impl/base"
+	apis_base "github.com/Relixik/minecraft-server/apis/base"
+	impl_base "github.com/Relixik/minecraft-server/impl/base"
 )
 
 type Server interface {

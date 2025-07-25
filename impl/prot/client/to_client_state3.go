@@ -1,17 +1,17 @@
 package client
 
 import (
-	"github.com/golangmc/minecraft-server/apis/buff"
-	"github.com/golangmc/minecraft-server/apis/data"
-	"github.com/golangmc/minecraft-server/apis/data/msgs"
-	"github.com/golangmc/minecraft-server/apis/ents"
-	"github.com/golangmc/minecraft-server/apis/game"
-	"github.com/golangmc/minecraft-server/apis/game/level"
-	"github.com/golangmc/minecraft-server/impl/base"
-	"github.com/golangmc/minecraft-server/impl/data/client"
-	"github.com/golangmc/minecraft-server/impl/data/plugin"
+	"github.com/Relixik/minecraft-server/apis/buff"
+	"github.com/Relixik/minecraft-server/apis/data"
+	"github.com/Relixik/minecraft-server/apis/data/msgs"
+	"github.com/Relixik/minecraft-server/apis/ents"
+	"github.com/Relixik/minecraft-server/apis/game"
+	"github.com/Relixik/minecraft-server/apis/game/level"
+	"github.com/Relixik/minecraft-server/impl/base"
+	"github.com/Relixik/minecraft-server/impl/data/client"
+	"github.com/Relixik/minecraft-server/impl/data/plugin"
 
-	apis_conn "github.com/golangmc/minecraft-server/impl/conn"
+	apis_conn "github.com/Relixik/minecraft-server/impl/conn"
 )
 
 type PacketOChatMessage struct {

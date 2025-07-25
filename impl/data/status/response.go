@@ -1,8 +1,8 @@
 package status
 
 import (
-	"github.com/golangmc/minecraft-server/apis/data"
-	"github.com/golangmc/minecraft-server/apis/data/chat"
+	"github.com/Relixik/minecraft-server/apis/data"
+	"github.com/Relixik/minecraft-server/apis/data/chat"
 )
 
 const (

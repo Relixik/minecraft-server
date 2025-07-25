@@ -4,16 +4,16 @@ import (
 	"bytes"
 	"fmt"
 
-	"github.com/golangmc/minecraft-server/apis/data/chat"
-	"github.com/golangmc/minecraft-server/apis/data/msgs"
-	"github.com/golangmc/minecraft-server/apis/game"
-	"github.com/golangmc/minecraft-server/apis/util"
-	"github.com/golangmc/minecraft-server/apis/uuid"
-	"github.com/golangmc/minecraft-server/impl/base"
-	"github.com/golangmc/minecraft-server/impl/game/auth"
-	"github.com/golangmc/minecraft-server/impl/game/ents"
-	"github.com/golangmc/minecraft-server/impl/prot/client"
-	"github.com/golangmc/minecraft-server/impl/prot/server"
+	"github.com/Relixik/minecraft-server/apis/data/chat"
+	"github.com/Relixik/minecraft-server/apis/data/msgs"
+	"github.com/Relixik/minecraft-server/apis/game"
+	"github.com/Relixik/minecraft-server/apis/util"
+	"github.com/Relixik/minecraft-server/apis/uuid"
+	"github.com/Relixik/minecraft-server/impl/base"
+	"github.com/Relixik/minecraft-server/impl/game/auth"
+	"github.com/Relixik/minecraft-server/impl/game/ents"
+	"github.com/Relixik/minecraft-server/impl/prot/client"
+	"github.com/Relixik/minecraft-server/impl/prot/server"
 )
 
 /**
