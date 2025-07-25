@@ -1,9 +1,9 @@
 package level
 
 import (
-	"github.com/golangmc/minecraft-server/apis/buff"
-	apis_level "github.com/golangmc/minecraft-server/apis/game/level"
-	"github.com/golangmc/minecraft-server/impl/base"
+	"github.com/Relixik/minecraft-server/apis/buff"
+	apis_level "github.com/Relixik/minecraft-server/apis/game/level"
+	"github.com/Relixik/minecraft-server/impl/base"
 )
 
 type slice struct {

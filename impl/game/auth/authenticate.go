@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/golangmc/minecraft-server/apis/urls"
+	"github.com/Relixik/minecraft-server/apis/urls"
 )
 
 const url = "https://sessionserver.mojang.com/session/minecraft/hasJoined"

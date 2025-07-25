@@ -1,11 +1,11 @@
 package mode
 
 import (
-	"github.com/golangmc/minecraft-server/apis/util"
-	"github.com/golangmc/minecraft-server/impl/base"
-	"github.com/golangmc/minecraft-server/impl/data/status"
-	"github.com/golangmc/minecraft-server/impl/prot/client"
-	"github.com/golangmc/minecraft-server/impl/prot/server"
+	"github.com/Relixik/minecraft-server/apis/util"
+	"github.com/Relixik/minecraft-server/impl/base"
+	"github.com/Relixik/minecraft-server/impl/data/status"
+	"github.com/Relixik/minecraft-server/impl/prot/client"
+	"github.com/Relixik/minecraft-server/impl/prot/server"
 )
 
 /**

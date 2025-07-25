@@ -3,8 +3,8 @@ package client
 import (
 	"fmt"
 
-	"github.com/golangmc/minecraft-server/apis/buff"
-	"github.com/golangmc/minecraft-server/impl/mask"
+	"github.com/Relixik/minecraft-server/apis/buff"
+	"github.com/Relixik/minecraft-server/impl/mask"
 )
 
 type SkinParts struct {

@@ -1,8 +1,8 @@
 package event
 
 import (
-	"github.com/golangmc/minecraft-server/impl/base"
-	"github.com/golangmc/minecraft-server/impl/data/plugin"
+	"github.com/Relixik/minecraft-server/impl/base"
+	"github.com/Relixik/minecraft-server/impl/data/plugin"
 )
 
 type PlayerConnJoinEvent struct {
