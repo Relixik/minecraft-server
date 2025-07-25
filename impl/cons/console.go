@@ -2,8 +2,10 @@ package cons
 
 import (
 	"bufio"
+	"context"
 	"io"
 	"os"
+	"sync"
 
 	"github.com/Relixik/minecraft-server/apis/base"
 	"github.com/Relixik/minecraft-server/apis/logs"
@@ -20,14 +22,24 @@ type Console struct {
 	OChannel chan string
 
 	report chan system.Message
+	
+	// Memory leak prevention
+	ctx    context.Context
+	cancel context.CancelFunc
+	wg     sync.WaitGroup
 }
 
 func NewConsole(report chan system.Message) *Console {
+	ctx, cancel := context.WithCancel(context.Background())
+	
 	console := &Console{
 		IChannel: make(chan string),
 		OChannel: make(chan string),
 
 		report: report,
+		
+		ctx:    ctx,
+		cancel: cancel,
 	}
 
 	console.i = io.MultiReader(os.Stdin)
@@ -40,29 +52,61 @@ func NewConsole(report chan system.Message) *Console {
 
 func (c *Console) Load() {
 	// handle i channel
+	c.wg.Add(1)
 	go func() {
+		defer c.wg.Done()
 		scanner := bufio.NewScanner(c.i)
 
-		for scanner.Scan() {
-			err := base.Attempt(func() {
-				c.IChannel <- scanner.Text()
-			})
+		for {
+			select {
+			case <-c.ctx.Done():
+				return
+			default:
+				if scanner.Scan() {
+					err := base.Attempt(func() {
+						c.IChannel <- scanner.Text()
+					})
 
-			if err != nil {
-				c.report <- system.Make(system.FAIL, err)
+					if err != nil {
+						c.report <- system.Make(system.FAIL, err)
+					}
+				} else {
+					// EOF or error, check context
+					select {
+					case <-c.ctx.Done():
+						return
+					default:
+						continue
+					}
+				}
 			}
 		}
 	}()
 
 	// handle o channel
+	c.wg.Add(1)
 	go func() {
-		for line := range c.OChannel {
-			c.logger.Info(line)
+		defer c.wg.Done()
+		for {
+			select {
+			case <-c.ctx.Done():
+				return
+			case line := <-c.OChannel:
+				c.logger.Info(line)
+			}
 		}
 	}()
 }
 
 func (c *Console) Kill() {
+	c.logger.Info("Shutting down console...")
+	
+	// Cancel context to signal goroutines to stop
+	c.cancel()
+	
+	// Wait for goroutines to finish
+	c.wg.Wait()
+	
 	defer func() {
 		_ = recover() // ignore panic with closing closed channel
 	}()
@@ -71,6 +115,8 @@ func (c *Console) Kill() {
 
 	close(c.IChannel)
 	close(c.OChannel)
+	
+	c.logger.Info("Console shutdown complete")
 }
 
 func (c *Console) Name() string {
